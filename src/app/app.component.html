@@ -1,1 +1,24 @@
+<h2>User Management</h2>
 <app-user-form></app-user-form>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Mobile</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let user of users$ | async">
+      <td>{{ user.firstName }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.phone }}</td>
+      <td>
+        <button (click)="onEdit(user)">Edit</button>
+        <button (click)="onDelete(user.id)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

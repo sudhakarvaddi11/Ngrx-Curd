@@ -1,0 +1,23 @@
+form {
+margin-bottom: 1rem;
+display: flex;
+gap: 10px;
+flex-wrap: wrap;
+}
+input, button {
+
+padding: 8px;
+font-size: 14px;
+}
+table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 1rem;
+}
+th, td {
+padding: 8px;
+border: 1px solid #ccc;
+}
+button {
+margin-right: 5px;
+}

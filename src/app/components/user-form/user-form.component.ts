@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { User } from '../../store/user/user.model';
-import { addUser, deleteUser, selectUser, updateUser } from '../../store/user/user.actions';
+import { addUser, addUserSuccess, deleteUser, selectUser, updateUser, updateUserSuccess } from '../../store/user/user.actions';
 import { selectAllUsers, selectSelectedUser } from '../../store/user/user.selectors';
 
 
@@ -13,48 +13,36 @@ import { selectAllUsers, selectSelectedUser } from '../../store/user/user.select
   styleUrl: './user-form.component.scss'
 })
 export class UserFormComponent {
-  users$: Observable<User[]>;
-  selectedUser$: Observable<User | null>;
-
   name = '';
   email = '';
   mobile = '';
-  editMode = false;
-  editingId: number | null = null;
+  id: number | null = null;
 
-  constructor(private store: Store) {
-    this.users$ = this.store.select(selectAllUsers);
-    this.selectedUser$ = this.store.select(selectSelectedUser);
+  constructor(private store: Store) {}
 
-    this.selectedUser$.subscribe(user => {
+  ngOnInit() {
+    this.store.select(selectSelectedUser).subscribe(user => {
       if (user) {
-        this.editMode = true;
-        this.editingId = user.id;
-        this.name = user.name;
+        this.id = user.id;
+        this.name = user.firstName;
         this.email = user.email;
-        this.mobile = user.mobile;
+        this.mobile = user.phone;
       }
     });
   }
 
-  submitForm() {
-    if (this.editMode && this.editingId !== null) {
-      this.store.dispatch(updateUser({
-        user: {
-          id: this.editingId,
-          name: this.name,
-          email: this.email,
-          mobile: this.mobile
-        }
-      }));
+  onSubmit() {
+    const user: User = {
+      id: this.id ?? Date.now(),
+      firstName: this.name,
+      email: this.email,
+      phone: this.mobile
+    };
+
+    if (this.id) {
+      this.store.dispatch(updateUserSuccess({ user }));
     } else {
-      const newUser: User = {
-        id: Date.now(),
-        name: this.name,
-        email: this.email,
-        mobile: this.mobile
-      };
-      this.store.dispatch(addUser({ user: newUser }));
+      this.store.dispatch(addUserSuccess({ user }));
     }
 
     this.resetForm();
@@ -64,15 +52,7 @@ export class UserFormComponent {
     this.name = '';
     this.email = '';
     this.mobile = '';
-    this.editMode = false;
-    this.editingId = null;
+    this.id = null;
   }
 
-  onEdit(id: number) {
-    this.store.dispatch(selectUser({ id }));
-  }
-
-  onDelete(id: number) {
-    this.store.dispatch(deleteUser({ id }));
-  }
 }
